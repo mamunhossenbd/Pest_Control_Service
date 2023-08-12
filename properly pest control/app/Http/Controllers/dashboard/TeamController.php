@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Http\Controllers\dashboard;
+
+use App\Http\Controllers\Controller;
+use App\Models\dashboard\Team;
+use Illuminate\Http\Request;
+
+class TeamController extends Controller
+{
+
+    public function index()
+    {
+        $data=Team::all();
+        return response()->json(['data'=>$data]);
+    }
+
+    public function create()
+    {
+        //
+    }
+
+    public function store(Request $request)
+    {
+        $filename=time().'_'.$request->file->getClientOriginalName();
+        $request->file->move(public_path('uploads/'),$filename);
+        $data=Team::create([
+            'name'=>$request->name,
+            'designation'=>$request->designation,
+            'photo'=>$filename
+        ]);
+        return response()->json([
+            'success'=>true,
+            'data'=>$data,
+            'message'=>'Successfully Inserted!'
+        ]);
+    }
+
+    public function show(string $id)
+    {
+        $data=Team::find($id);
+        return response()->json(['success'=>true,'data'=>$data]);
+    }
+
+    public function edit(string $id)
+    {
+        $data=Team::find($id);
+        return response()->json(['success'=>true,'data'=>$data]);
+    }
+
+    public function update(Request $request, string $id)
+    {
+        if ($request->file()) {
+            $filename=time().'_'.$request->file->getClientOriginalName();
+            $request->file->move(public_path('uploads/'),$filename);
+
+            $data=Team::find($id)->update([
+                'name'=>$request->name,
+                'designation'=>$request->designation,
+                'photo'=>$filename
+            ]);
+        }else{
+            $data=Team::find($id)->update([
+                'name'=>$request->name,
+                'designation'=>$request->designation,
+
+            ]);
+        }
+
+        return response()->json(['success'=>true,'data'=>$data,'message'=>'Successfully Updated!']);
+    }
+
+    public function destroy(string $id)
+    {
+        $data=Team::find($id)->delete();
+        return response()->json(['success'=>true,'data'=>$data,'message'=>'Successfully Deleted!']);
+    }
+}
